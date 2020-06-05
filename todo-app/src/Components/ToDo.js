@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 
 
 
@@ -7,13 +7,21 @@ import React, {useState} from 'react';
 //initial set up
 
 
-function Task({task}) {
+function Task({task, index, completeTask, deleteTask}) {
     return (
         <div
             className="task"
             style={{ textDecoration: task.completed ? "line-through" : "" }}
         >
             {task.title}
+
+            
+            <button style={{ background: "red" }} onClick={() => deleteTask(index)}>Abort!</button>
+            
+            
+            <button onClick={() => completeTask(index)}>Mission Complete</button>
+
+           
         </div>
     );
 }
@@ -22,9 +30,12 @@ function Task({task}) {
 //To-do function for listing task
 
 function Todo() {
+   
+    const[tasksRemaining, setTasksRemaining] = useState(0)
+
     const [tasks, setTasks] = useState([
         {
-            title: "Take a shower",
+            title: "Eat Wheaties",
             completed: false
         },
         {
@@ -34,10 +45,20 @@ function Todo() {
         {
             title: "Practice ninja skills",
             completed: false
+        },
+        {
+            title: "Be a ninja",
+            completed: false
         }
     ]);
 
-//New task bar
+//New task, complete, delete, task count
+
+    useEffect(() => {
+        setTasksRemaining(tasks.filter(task => !task.completed).length)
+    });
+
+    
 
     const addTask = title => {
         const newTasks = [...tasks, { title, completed: false }];
@@ -45,19 +66,30 @@ function Todo() {
     };
 
 
+    const completeTask = index => {
+        const newTasks = [...tasks];
+        newTasks[index].completed = true;
+        setTasks(newTasks);
+    };
 
-
+    const deleteTask = index => {
+        const newTasks = [...tasks];
+        newTasks.splice(index, 1)
+        setTasks(newTasks);
+    };
 
 
 
     return (
         <div className="list-box">
-            <div className="heading">Missions:</div>
+            <div className="heading">Missions:({tasksRemaining})</div>
             <div className="tasks">
                 {tasks.map((task, index) => (
                     <Task
                         task={task}
                         index={index}
+                        completeTask={completeTask}
+                        deleteTask={deleteTask}
                         key={index}
                     />
 
